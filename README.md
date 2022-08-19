@@ -1,34 +1,82 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Welcome to NFT Minting Frontend
 
-## Getting Started
+![NFT Minting Frontend](public/images/site.png)
 
-First, run the development server:
+This starter kit provides a nice and easy way for linking an existing NFT smart contract to this minting frontend.
+
+Big thanks to HashLips because `NFT Minting Frontend` is customized from [HashLips/hashlips_nft_minting_dapp](https://github.com/HashLips/hashlips_nft_minting_dapp) ✨
+
+## Demo
+
+Demo site is here: <https://nft-minting-frontend.vercel.app/>
+
+Contract Address: <https://rinkeby.etherscan.io/address/0x181b7df2526dd89ee724145e7937bc5caa077df8>
+
+You can mint sample NFT on Rinkeby Network.
+
+If you don't have any ETH, go to [Rinkeby Faucet](https://rinkebyfaucet.com/) and get 0.1 Rinkeby ETH.
+
+## Usage
+
+In order to make use of starter kit , all you need to do is change the configurations to point to your smart contract as well as update the images and theme file.
+
+For the most part all the changes will be in the `store` folder.
+
+To link up your existing smart contract, go to the `store/configAtom.ts` file and update the following fields to fit your smart contract and network details. The cost field should be in wei.
+
+Note: this starter kit is designed to work with the intended NFT smart contract, that only takes one parameter(`mintAmount`) in the `mint` function. But you can change that in the `index.tsx` file if you need to use a smart contract that takes more params.
+
+```typescript:store/configAtom.ts
+// store/configAtom.ts
+export const configAtom = atom<Config>({
+  CONTRACT_ADDRESS: '0x9f8cd130aa518cb246e132c2f9100964eff245e3',
+  SCAN_LINK: 'https://rinkeby.etherscan.io',
+  NETWORK: {
+    NAME: 'Rinkeby',
+    SYMBOL: 'ETH',
+    ID: 4,
+  },
+  NFT_NAME: 'NFT Minting Frontend',
+  SYMBOL: 'NMF',
+  MAX_MINT_AMOUNT: 10,
+  MAX_SUPPLY: 500,
+  WEI_COST: 100000000000000,
+  GAS_LIMIT: 285000,
+  SITE_NAME: 'NFT Minting Frontend',
+})
+```
+
+Make sure you copy the contract ABI from like remix and paste it in the `contracts/abi.json` file.
+
+Now you will need to change a `example.gif` in the `public/images` folder.
+
+Next change the theme colors in the `tailwind.config.js` file.
+
+```javascript:tailwind.config.js
+// tailwind.config.js
+theme: {
+  extend: {
+    colors: {
+      primary: '#3D425F',
+      secondary: '#4E8D97',
+      accent: '#66B3B1',
+    },
+  },
+}
+```
+
+Now you will need to change the `public/favicon.ico` to your brand images.
+
+After all the changes you can run.
 
 ```bash
-npm run dev
-# or
+yarn install
+```
+
+and run the development server
+
+```bash
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Enjoy your NFT minting!
