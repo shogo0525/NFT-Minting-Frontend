@@ -3,7 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  html,
+  body,
+  body > div:first-child,
+  div#__next,
+  main {
+    @apply h-full;
+  }
   body {
-    @apply text-white
+    @apply text-white;
   }
 }

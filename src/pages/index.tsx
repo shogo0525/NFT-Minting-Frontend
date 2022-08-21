@@ -5,6 +5,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState, useCallback } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import BuyButton from 'components/BuyButton'
 import MintCounter from 'components/MintCounter'
 import abi from 'contracts/abi.json'
@@ -84,6 +85,49 @@ const Home: NextPage = () => {
     }
   }
 
+  const signAndVerifySample = async () => {
+    const { ethereum } = window
+    const metamaskIsInstalled = ethereum && ethereum.isMetaMask
+
+    if (!metamaskIsInstalled) {
+      alert('Install Metamask.')
+      return
+    }
+
+    try {
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
+      const networkId = await ethereum.request({ method: 'net_version' })
+
+      if (networkId != CONFIG.NETWORK.ID) {
+        alert(`Change network to ${CONFIG.NETWORK.NAME}.`)
+        return
+      }
+
+      const provider = new ethers.providers.Web3Provider(ethereum)
+      const signer = provider.getSigner()
+
+      // NOTE: You could create an API for getting `nonce` but here we just create it on frontend.
+      const nonce = uuidv4()
+      const signature = await signer.signMessage(nonce)
+
+      const response = await fetch('/api/sample', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          account: accounts[0],
+          nonce,
+          signature,
+        }),
+      })
+
+      console.log('response', await response.json())
+    } catch (e) {
+      console.log('e', e)
+    }
+  }
+
   const getData = useCallback(async () => {
     if (!blockchain) return
     const totalSupply = (await blockchain.contract.totalSupply()).toNumber()
@@ -134,11 +178,11 @@ const Home: NextPage = () => {
         <title>{CONFIG.SITE_NAME}</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <div className='h-screen bg-primary text-center flex flex-col justify-center items-center'>
-        <h1 className='text-6xl text-accent'>{CONFIG.SITE_NAME}</h1>
-        <div className='w-full mt-10 py-10 flex flex-col justify-between items-center md:flex-row'>
-          <div className='hidden py-10 md:block md:w-3/12'>
-            <div className='w-44 h-44 relative mx-auto rounded-full border-secondary border-2 border-dashed'>
+      <div className='h-full p-3 bg-primary text-center flex flex-col  items-center md:justify-center'>
+        <h1 className='text-3xl md:text-6xl text-accent'>{CONFIG.SITE_NAME}</h1>
+        <div className='w-full mt-5 md:mt-10 flex flex-col justify-between items-center md:flex-row'>
+          <div className='hidden md:block md:w-3/12'>
+            <div className='w-32 h-32 md:w-44 md:h-44 relative mx-auto rounded-full border-secondary border-2 border-dashed'>
               <Image
                 className='rounded-full'
                 alt='example'
@@ -148,7 +192,7 @@ const Home: NextPage = () => {
             </div>
           </div>
 
-          <div className='w-3/4 h-[500px] md:w-6/12 px-6 py-20 flex flex-col justify-center items-center rounded-xl bg-accent border-secondary border-8 border-dashed'>
+          <div className='w-3/4 h-[450px] md:h-[500px] md:w-6/12 px-6 py-20 flex flex-col justify-center items-center rounded-xl bg-accent border-secondary border-8 border-dashed'>
             <p className='text-5xl font-bold'>
               {contractData?.totalSupply ?? 0} / {CONFIG.MAX_SUPPLY}
             </p>
@@ -157,7 +201,7 @@ const Home: NextPage = () => {
               href={`${CONFIG.SCAN_LINK}/address/${CONFIG.CONTRACT_ADDRESS}`}
             >
               <a
-                className='block mt-5 font-bold text-secondary'
+                className='block mt-5 font-extrabold text-secondary'
                 target='_blank'
               >
                 {truncate(CONFIG.CONTRACT_ADDRESS, 15)}
@@ -213,8 +257,8 @@ const Home: NextPage = () => {
             )}
           </div>
 
-          <div className='py-10 md:w-3/12'>
-            <div className='w-44 h-44 relative mx-auto rounded-full border-secondary border-2 border-dashed -scale-x-100'>
+          <div className='md:w-3/12'>
+            <div className='w-32 h-32 md:w-44 md:h-44 mt-5 md:mt-0 relative mx-auto rounded-full border-secondary border-2 border-dashed -scale-x-100'>
               <Image
                 className='rounded-full'
                 alt='example'
